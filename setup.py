@@ -10,8 +10,8 @@ setup(name='FormatRosterData'
     ,packages=['FormatRosterData']
     ,zip_safe=False
     ,test_suite='nose.collector'
-    ,tests_require=['nose']
+    ,tests_require=['nose','pandas']
     ,python_requires=">=3.6"
-    #,install_requires=['']
-    ,setup_requires=['nose']
+    ,install_requires=['pandas']
+    ,setup_requires=['nose','pandas']
     )

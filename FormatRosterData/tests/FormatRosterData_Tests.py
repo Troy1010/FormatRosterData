@@ -7,6 +7,7 @@ import unittest
 from nose.tools import *
 import os, sys
 import TM_CommonPy as TM
+import FormatRosterData as FRD
 
 @unittest.skipIf(bSkip,"Skip Setting")
 class Test_FormatRosterData(unittest.TestCase):
@@ -14,7 +15,7 @@ class Test_FormatRosterData(unittest.TestCase):
 
     @classmethod
     def setUpClass(self):
-        os.chdir(os.path.join('BudgetValue','tests'))
+        os.chdir(os.path.join('FormatRosterData','tests'))
         TM.Delete(self.sTestWorkspace)
 
     @classmethod
@@ -29,4 +30,5 @@ class Test_FormatRosterData(unittest.TestCase):
     @unittest.skipIf(bSkipSome,"SkipSome Setting")
     def test_DummyTest(self):
         with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            FRD.Hello()
             self.assertTrue(True)

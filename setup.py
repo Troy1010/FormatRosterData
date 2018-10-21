@@ -1,6 +1,8 @@
-from setuptools import setup
+#from setuptools import setup
+from cx_Freeze import setup,Executable
+import os
 
-cRequires = ('nose','pandas','XlsxWriter','openpyxl')
+cRequires = ('nose','pandas','XlsxWriter','openpyxl','FormatRosterData')
 
 setup(name='FormatRosterData'
     ,version='0.1'
@@ -16,4 +18,5 @@ setup(name='FormatRosterData'
     ,python_requires=">=3.6"
     ,install_requires=[*cRequires]
     ,setup_requires=[*cRequires]
+    ,executables = [Executable("Main.py")]
     )

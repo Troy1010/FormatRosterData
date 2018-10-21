@@ -1,8 +1,9 @@
 import os
-import pandas as pd
+import openpyxl
 
 def Hello():
     print("Hi")
 
-def LoadSheet():
-    xl = pd.ExcelFile("ExampleStart.xlsx")
+def LoadSheet(sWorkbookFilePath):
+    vWorkbook = openpyxl.load_workbook(sWorkbookFilePath)
+    return vWorkbook.active

@@ -8,6 +8,7 @@ from nose.tools import *
 import os, sys
 import TM_CommonPy as TM
 import FormatRosterData as FRD
+from FormatRosterData._Logger import FRDLog
 
 @unittest.skipIf(bSkip,"Skip Setting")
 class Test_FormatRosterData(unittest.TestCase):
@@ -30,5 +31,8 @@ class Test_FormatRosterData(unittest.TestCase):
     @unittest.skipIf(bSkipSome,"SkipSome Setting")
     def test_DummyTest(self):
         with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
+            print(os.getcwd())
+            vSheet = FRD.LoadSheet("ExampleStart.xlsx")
+            FRDLog.debug(vSheet['A1'].value)
+            FRDLog.debug(vSheet['A2'].value)
             FRD.Hello()
-            self.assertTrue(True)

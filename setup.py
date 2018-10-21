@@ -1,5 +1,7 @@
 from setuptools import setup
 
+cRequires = ('nose','pandas','XlsxWriter','openpyxl')
+
 setup(name='FormatRosterData'
     ,version='0.1'
     ,description=''
@@ -10,8 +12,8 @@ setup(name='FormatRosterData'
     ,packages=['FormatRosterData']
     ,zip_safe=False
     ,test_suite='nose.collector'
-    ,tests_require=['nose','pandas']
+    ,tests_require=[*cRequires]
     ,python_requires=">=3.6"
-    ,install_requires=['pandas']
-    ,setup_requires=['nose','pandas']
+    ,install_requires=[*cRequires]
+    ,setup_requires=[*cRequires]
     )

@@ -11,7 +11,13 @@ import traceback
 ##endregion
 try:
     with TM.WorkspaceContext("Output",bCDInto=True,bPreDelete=True):
+
         for sFileName in os.listdir("../res/Unformatted"):
+            print('sFileName:'+sFileName)
+        for sFileName in os.listdir("../res/Unformatted"):
+            if sFileName.split(".")[-1] != "xlsx" or "~$" in sFileName:
+                print("Ignoring file: "+sFileName)
+                continue
             sFilePath = "../res/Unformatted/"+sFileName
             #---Open file
             vWorkbook = openpyxl.load_workbook(sFilePath)

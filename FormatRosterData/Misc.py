@@ -7,15 +7,17 @@ def GetPos(vCell,iColAdjustment=0):
 
 def SplitName(vOldSheet,vNewSheet):
     iMaxCol = len(vNewSheet['1'])
+    print('SplitName`iMaxCol:'+str(iMaxCol))
     bSuccess = True
     for vCell in vOldSheet['B']:
         cSplitString = vCell.value.split(" ",1)
-        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol)+str(vCell.row)] = cSplitString[0]
-        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = cSplitString[1]
+        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = cSplitString[0]
+        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+2)+str(vCell.row)] = cSplitString[1]
     return bSuccess
 
 def SplitTown(vOldSheet,vNewSheet):
     iMaxCol = len(vNewSheet['1'])
+    print('SplitTown`iMaxCol:'+str(iMaxCol))
     bSuccess = True
     #---Determine Town Column
     bStart=False
@@ -31,10 +33,9 @@ def SplitTown(vOldSheet,vNewSheet):
         return False
     #---
     for vCell in vOldSheet[sColumn]:
-        cSplitString = vCell.value.split(" ")
-        cSplitString[0] = cSplitString[0][:-1]
-        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol)+str(vCell.row)] = cSplitString[0]
-        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = cSplitString[1]
+        cSplitString = vCell.value.split(", ")
+        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = cSplitString[0]
+        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+2)+str(vCell.row)] = cSplitString[1].split("/")[0].strip()
     return bSuccess
 
 def AppendOldSheet(vOldWorkspace,vNewSheet):

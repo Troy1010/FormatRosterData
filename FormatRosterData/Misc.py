@@ -7,7 +7,6 @@ def GetPos(vCell,iColAdjustment=0):
 
 def SplitName(vOldSheet,vNewSheet):
     iMaxCol = len(vNewSheet['1'])
-    print('SplitName`iMaxCol:'+str(iMaxCol))
     bSuccess = True
     #---Determine Name Column and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
@@ -15,8 +14,6 @@ def SplitName(vOldSheet,vNewSheet):
             if "name" in vCell.value.lower():
                 iRow = vCell.row
                 sColumn = vCell.column
-                print("iRow:"+str(iRow))
-                print("sColumn:"+sColumn)
                 break
         except (TypeError, AttributeError):
             pass
@@ -28,14 +25,16 @@ def SplitName(vOldSheet,vNewSheet):
         if vCell.row <= iRow:
             continue
         #-
-        cSplitString = vCell.value.split(" ",1)
-        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = cSplitString[0]
-        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+2)+str(vCell.row)] = cSplitString[1]
+        cSplitString = vCell.value.strip().split(None,1) #split None splits at first whitespace, a necessary bugfix
+        try:
+            vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = cSplitString[0]
+            vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+2)+str(vCell.row)] = cSplitString[1]
+        except IndexError:
+            bSuccess = False
     return bSuccess
 
 def SplitTown(vOldSheet,vNewSheet):
     iMaxCol = len(vNewSheet['1'])
-    print('SplitTown`iMaxCol:'+str(iMaxCol))
     bSuccess = True
     #---Determine Name Column and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
@@ -43,8 +42,6 @@ def SplitTown(vOldSheet,vNewSheet):
             if "hometown" in vCell.value.lower():
                 iRow = vCell.row
                 sColumn = vCell.column
-                print("iRow:"+str(iRow))
-                print("sColumn:"+sColumn)
                 break
         except (TypeError, AttributeError):
             pass
@@ -62,10 +59,13 @@ def SplitTown(vOldSheet,vNewSheet):
         vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+2)+str(vCell.row)] = cSplitString[1].split("/")[0].strip()
     return bSuccess
 
-def AppendOldSheet(vOldWorkspace,vNewSheet):
+def TranslateHeight(vOldWorkspace,vNewSheet):
+    pass
+
+def AppendOldSheet(vOldSheet,vNewSheet):
     iMaxCol = len(vNewSheet['1'])
     bSuccess = True
-    for cColumn in vOldWorkspace.active.iter_cols():
+    for cColumn in vOldSheet.iter_cols():
         for vCell in cColumn:
             vNewSheet[GetPos(vCell,iColAdjustment=iMaxCol+1)] = vCell.value
     return bSuccess

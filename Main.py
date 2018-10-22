@@ -9,15 +9,15 @@ import openpyxl
 import TM_CommonPy as TM
 import traceback
 ##endregion
-try:
-    with TM.WorkspaceContext("Output",bCDInto=True,bPreDelete=True):
 
+def Main():
+    with TM.WorkspaceContext("Output",bCDInto=True,bPreDelete=True):
+        iTotalErrorCount = 0
         for sFileName in os.listdir("../res/Unformatted"):
-            print('sFileName:'+sFileName)
-        for sFileName in os.listdir("../res/Unformatted"):
-            if sFileName.split(".")[-1] != "xlsx" or "~$" in sFileName:
-                print("Ignoring file: "+sFileName)
+            if sFileName.split(".")[-1] != "xlsx" or "~$" in sFileName or "template" in sFileName.lower():
+                print("sFileName(IGNORED): "+sFileName)
                 continue
+            print("sFileName:"+sFileName)
             sFilePath = "../res/Unformatted/"+sFileName
             #---Open file
             vWorkbook = openpyxl.load_workbook(sFilePath)
@@ -28,18 +28,24 @@ try:
             bSuccess = True
             bSuccess &= FRD.SplitName(vSheet,vNewSheet)
             bSuccess &= FRD.SplitTown(vSheet,vNewSheet)
-            bSuccess &= FRD.AppendOldSheet(vWorkbook,vNewSheet)
+            bSuccess &= FRD.AppendOldSheet(vSheet,vNewSheet)
             #---Save
-            print("SaveName:"+sFileName.split(".")[0]+"_Reformatted.xlsx")
             if not bSuccess:
+                print("SaveName:"+sFileName.split(".")[0]+"_Reformatted(ERRORS).xlsx")
                 vNewWorkbook.save(sFileName.split(".")[0]+"_Reformatted(ERRORS).xlsx")
+                iTotalErrorCount += 1
             else:
+                print("SaveName:"+sFileName.split(".")[0]+"_Reformatted.xlsx")
                 vNewWorkbook.save(sFileName.split(".")[0]+"_Reformatted.xlsx")
-except Exception as e:
-    print("====================================================================")
-    print("Traceback (most recent call last):")
-    traceback.print_tb(e.__traceback__)
-    print(e)
-    print(e.__class__.__name__)
+    if iTotalErrorCount:
+        print("ERRORS`iTotalErrorCount:"+str(iTotalErrorCount))
+    else:
+        print("Success`iTotalErrorCount:"+str(iTotalErrorCount))
+
+try:
+    Main()
+except PermissionError:
+    print("PERMISSION_ERROR")
+    TM.DisplayDone()
 if bPause:
     TM.DisplayDone()

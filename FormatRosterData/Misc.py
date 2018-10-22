@@ -9,7 +9,25 @@ def SplitName(vOldSheet,vNewSheet):
     iMaxCol = len(vNewSheet['1'])
     print('SplitName`iMaxCol:'+str(iMaxCol))
     bSuccess = True
+    #---Determine Name Column and Row
+    for vCell in (vOldSheet['1']+vOldSheet['2']):
+        try:
+            if "NAME" in vCell.value:
+                iRow = vCell.row
+                sColumn = vCell.column
+                print("iRow:"+str(iRow))
+                print("sColumn:"+sColumn)
+                break
+        except TypeError:
+            pass
+    else:
+        return False
+    #---
     for vCell in vOldSheet['B']:
+        #-Skip past header
+        if vCell.row <= iRow:
+            continue
+        #-
         cSplitString = vCell.value.split(" ",1)
         vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = cSplitString[0]
         vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+2)+str(vCell.row)] = cSplitString[1]
@@ -19,7 +37,7 @@ def SplitTown(vOldSheet,vNewSheet):
     iMaxCol = len(vNewSheet['1'])
     print('SplitTown`iMaxCol:'+str(iMaxCol))
     bSuccess = True
-    #---Determine Town Column
+    #---Determine Name Column and Row
     bStart=False
     for vCell in vOldSheet['1']:
         if vCell.column == "F":

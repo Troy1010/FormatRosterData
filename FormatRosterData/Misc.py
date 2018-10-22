@@ -12,13 +12,13 @@ def SplitName(vOldSheet,vNewSheet):
     #---Determine Name Column and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
         try:
-            if "NAME" in vCell.value:
+            if "name" in vCell.value.lower():
                 iRow = vCell.row
                 sColumn = vCell.column
                 print("iRow:"+str(iRow))
                 print("sColumn:"+sColumn)
                 break
-        except TypeError:
+        except (TypeError, AttributeError):
             pass
     else:
         return False
@@ -38,19 +38,25 @@ def SplitTown(vOldSheet,vNewSheet):
     print('SplitTown`iMaxCol:'+str(iMaxCol))
     bSuccess = True
     #---Determine Name Column and Row
-    bStart=False
-    for vCell in vOldSheet['1']:
-        if vCell.column == "F":
-            bStart=True
-        if bStart:
-            if TM.MsgBox("Is this a city?\n\t"+str(vCell.value),iStyle=4) == 6: #(yes)
+    for vCell in (vOldSheet['1']+vOldSheet['2']):
+        try:
+            if "hometown" in vCell.value.lower():
+                iRow = vCell.row
                 sColumn = vCell.column
+                print("iRow:"+str(iRow))
+                print("sColumn:"+sColumn)
                 break
+        except (TypeError, AttributeError):
+            pass
     else:
-        print("Unable to find city column")
+        print("Could not find HOMETOWN Column and Row")
         return False
     #---
     for vCell in vOldSheet[sColumn]:
+        #-Skip past header
+        if vCell.row <= iRow:
+            continue
+        #-
         cSplitString = vCell.value.split(", ")
         vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = cSplitString[0]
         vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+2)+str(vCell.row)] = cSplitString[1].split("/")[0].strip()

@@ -55,12 +55,69 @@ def SplitTown(vOldSheet,vNewSheet):
             continue
         #-
         cSplitString = vCell.value.split(", ")
-        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = cSplitString[0]
-        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+2)+str(vCell.row)] = cSplitString[1].split("/")[0].strip()
+        try:
+            vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = cSplitString[0]
+            vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+2)+str(vCell.row)] = cSplitString[1].split("/")[0].strip()
+        except:
+            bSuccess=False
+            raise
     return bSuccess
 
-def TranslateHeight(vOldWorkspace,vNewSheet):
-    pass
+def ConvertDateToHeight(vDate):
+    #---Filter
+    if vDate is None:
+        return ""
+    #---
+    cTemp = str(vDate).split("-")
+    return cTemp[1]+"\'"+cTemp[2].split(None)[0]+"\""
+
+def TranslateHeight(vOldSheet,vNewSheet):
+    iMaxCol = len(vNewSheet['1'])
+    bSuccess = True
+    #---Determine Height Col and Row
+    for vCell in (vOldSheet['1']+vOldSheet['2']):
+        try:
+            if "ht." in vCell.value.lower() or "height" in vCell.value.lower():
+                iRow = vCell.row
+                sColumn = vCell.column
+                break
+        except (TypeError, AttributeError):
+            pass
+    else:
+        print("Could not find Height Column and Row")
+        return False
+    #---
+    for vCell in vOldSheet[sColumn]:
+        #-Skip past header
+        if vCell.row <= iRow:
+            continue
+        #-
+        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = ConvertDateToHeight(vCell.value)
+    return bSuccess
+
+def GetWeight(vOldSheet,vNewSheet):
+    iMaxCol = len(vNewSheet['1'])
+    bSuccess = True
+    #---Determine Weight Col and Row
+    for vCell in (vOldSheet['1']+vOldSheet['2']):
+        try:
+            if "wt." in vCell.value.lower() or "weight" in vCell.value.lower():
+                iRow = vCell.row
+                sColumn = vCell.column
+                break
+        except (TypeError, AttributeError):
+            pass
+    else:
+        print("Could not find Weight Column and Row")
+        return False
+    #---
+    for vCell in vOldSheet[sColumn]:
+        #-Skip past header
+        if vCell.row <= iRow:
+            continue
+        #-
+        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = vCell.value
+    return bSuccess
 
 def AppendOldSheet(vOldSheet,vNewSheet):
     iMaxCol = len(vNewSheet['1'])

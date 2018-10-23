@@ -28,6 +28,9 @@ def Main():
             bSuccess = True
             bSuccess &= FRD.SplitName(vSheet,vNewSheet)
             bSuccess &= FRD.SplitTown(vSheet,vNewSheet)
+            bSuccess &= FRD.TranslateHeight(vSheet,vNewSheet)
+            if not "women" in sFileName.lower():
+                bSuccess &= FRD.GetWeight(vSheet,vNewSheet)
             bSuccess &= FRD.AppendOldSheet(vSheet,vNewSheet)
             #---Save
             if not bSuccess:
@@ -46,6 +49,5 @@ try:
     Main()
 except PermissionError:
     print("PERMISSION_ERROR")
-    TM.DisplayDone()
 if bPause:
     TM.DisplayDone()

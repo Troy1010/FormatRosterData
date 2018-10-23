@@ -119,6 +119,46 @@ def GetWeight(vOldSheet,vNewSheet):
         vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = vCell.value
     return bSuccess
 
+def ConvertFshSophJrSenToInt(vValue):
+    if "Fr." in vValue or "freshman" in vValue.lower():
+        return 1
+    elif "So." in vValue or "sophmore" in vValue.lower() or "soph" in vValue.lower():
+        return 2
+    elif "Jr." in vValue or "junior" in vValue.lower():
+        return 3
+    elif "Sr." in vValue or "senior" in vValue.lower() or "gr." in vValue.lower():
+        return 4
+    else:
+        return -1
+
+def GetSchoolyear(vOldSheet,vNewSheet):
+    bSuccess = True
+    #---Determine GetSchoolyear Col and Row
+    for vCell in (vOldSheet['1']+vOldSheet['2']):
+        try:
+            if "cl." in vCell.value.lower() or "YEAR" in vCell.value or "yr." in vCell.value.lower():
+                iRow = vCell.row
+                sColumn = vCell.column
+                break
+        except (TypeError, AttributeError):
+            pass
+    else:
+        print("Could not find GetSchoolyear Column and Row")
+        return False
+    #---
+    iMaxCol = len(vNewSheet['1'])
+    for vCell in vOldSheet[sColumn]:
+        #-Skip past header
+        if vCell.row <= iRow:
+            continue
+        #-
+        iInt = ConvertFshSophJrSenToInt(vCell.value)
+        if iInt == -1:
+            print("Could not get FshSophJrSen int from:"+str(vCell.value))
+            bSuccess = False
+        vNewSheet[openpyxl.utils.get_column_letter(iMaxCol+1)+str(vCell.row)] = iInt
+    return bSuccess
+
 def AppendOldSheet(vOldSheet,vNewSheet):
     iMaxCol = len(vNewSheet['1'])
     bSuccess = True

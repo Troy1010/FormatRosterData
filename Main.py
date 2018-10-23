@@ -31,6 +31,7 @@ def Main():
             bSuccess &= FRD.TranslateHeight(vSheet,vNewSheet)
             if not "women" in sFileName.lower():
                 bSuccess &= FRD.GetWeight(vSheet,vNewSheet)
+            bSuccess &= FRD.GetSchoolyear(vSheet,vNewSheet)
             bSuccess &= FRD.AppendOldSheet(vSheet,vNewSheet)
             #---Save
             if not bSuccess:

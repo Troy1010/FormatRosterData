@@ -6,7 +6,6 @@ def GetPos(vCell,iColAdjustment=0):
     return openpyxl.utils.get_column_letter(openpyxl.utils.column_index_from_string(vCell.column)+iColAdjustment)+str(vCell.row)
 
 def SplitName(vOldSheet,vNewSheet):
-    iMaxCol = len(vNewSheet['1'])
     bSuccess = True
     #---Determine Name Column and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
@@ -20,6 +19,7 @@ def SplitName(vOldSheet,vNewSheet):
     else:
         return False
     #---
+    iMaxCol = len(vNewSheet['1'])
     for vCell in vOldSheet['B']:
         #-Skip past header
         if vCell.row <= iRow:
@@ -34,7 +34,6 @@ def SplitName(vOldSheet,vNewSheet):
     return bSuccess
 
 def SplitTown(vOldSheet,vNewSheet):
-    iMaxCol = len(vNewSheet['1'])
     bSuccess = True
     #---Determine Name Column and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
@@ -49,6 +48,7 @@ def SplitTown(vOldSheet,vNewSheet):
         print("Could not find HOMETOWN Column and Row")
         return False
     #---
+    iMaxCol = len(vNewSheet['1'])
     for vCell in vOldSheet[sColumn]:
         #-Skip past header
         if vCell.row <= iRow:
@@ -69,10 +69,9 @@ def ConvertDateToHeight(vDate):
         return ""
     #---
     cTemp = str(vDate).split("-")
-    return cTemp[1]+"\'"+cTemp[2].split(None)[0]+"\""
+    return int(cTemp[1])*12+int(cTemp[2].split(None)[0])
 
 def TranslateHeight(vOldSheet,vNewSheet):
-    iMaxCol = len(vNewSheet['1'])
     bSuccess = True
     #---Determine Height Col and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
@@ -87,6 +86,7 @@ def TranslateHeight(vOldSheet,vNewSheet):
         print("Could not find Height Column and Row")
         return False
     #---
+    iMaxCol = len(vNewSheet['1'])
     for vCell in vOldSheet[sColumn]:
         #-Skip past header
         if vCell.row <= iRow:
@@ -96,7 +96,6 @@ def TranslateHeight(vOldSheet,vNewSheet):
     return bSuccess
 
 def GetWeight(vOldSheet,vNewSheet):
-    iMaxCol = len(vNewSheet['1'])
     bSuccess = True
     #---Determine Weight Col and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
@@ -111,6 +110,7 @@ def GetWeight(vOldSheet,vNewSheet):
         print("Could not find Weight Column and Row")
         return False
     #---
+    iMaxCol = len(vNewSheet['1'])
     for vCell in vOldSheet[sColumn]:
         #-Skip past header
         if vCell.row <= iRow:
@@ -122,7 +122,11 @@ def GetWeight(vOldSheet,vNewSheet):
 def AppendOldSheet(vOldSheet,vNewSheet):
     iMaxCol = len(vNewSheet['1'])
     bSuccess = True
-    for cColumn in vOldSheet.iter_cols():
-        for vCell in cColumn:
-            vNewSheet[GetPos(vCell,iColAdjustment=iMaxCol+1)] = vCell.value
+    try:
+        for cColumn in vOldSheet.iter_cols():
+            for vCell in cColumn:
+                vNewSheet[GetPos(vCell,iColAdjustment=iMaxCol+1)] = vCell.value
+    except:
+        print("Could not append old sheet")
+        bSuccess=False
     return bSuccess

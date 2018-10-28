@@ -6,6 +6,8 @@ import TM_CommonPy as TM
 import os
 
 try:
+    TM.Delete("build")
+    TM.Delete("dist")
     TM.Run("python setup.py sdist bdist_wheel")
 except Exception as e:
     print(e)

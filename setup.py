@@ -1,11 +1,11 @@
-#from setuptools import setup
-from cx_Freeze import setup,Executable
+from setuptools import setup
+#from cx_Freeze import setup,Executable
 import os
 
-cRequires = ('nose','pandas','XlsxWriter','openpyxl','FormatRosterData')
+cRequires = ('TM_CommonPy','nose','pandas','XlsxWriter','openpyxl')
 
 setup(name='FormatRosterData'
-    ,version='0.1'
+    ,version='0.1.02'
     ,description=''
     ,author='Troy1010'
     #,author_email=''
@@ -18,5 +18,5 @@ setup(name='FormatRosterData'
     ,python_requires=">=3.6"
     ,install_requires=[*cRequires]
     ,setup_requires=[*cRequires]
-    ,executables = [Executable("Main.py")]
+    #,executables = [Executable("Main.py")]
     )

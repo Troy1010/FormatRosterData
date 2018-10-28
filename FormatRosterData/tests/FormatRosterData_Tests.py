@@ -31,8 +31,4 @@ class Test_FormatRosterData(unittest.TestCase):
     @unittest.skipIf(bSkipSome,"SkipSome Setting")
     def test_DummyTest(self):
         with TM.CopyContext("res/Examples_Backup",self.sTestWorkspace+TM.FnName(),bPostDelete=False):
-            print(os.getcwd())
-            vSheet = FRD.LoadSheet("ExampleStart.xlsx")
-            FRDLog.debug(vSheet['A1'].value)
-            FRDLog.debug(vSheet['A2'].value)
-            FRD.Hello()
+            pass

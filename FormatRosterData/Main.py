@@ -1,6 +1,6 @@
 ##region Setttings
 sFileName = "ExampleStart.xlsx"
-bPause = False
+bPause = True
 ##endregion
 ##region Imports
 import os
@@ -12,13 +12,13 @@ import traceback
 
 def Main():
     with TM.WorkspaceContext("Output",bCDInto=True,bPreDelete=True):
-        iTotalErrorCount = 0
-        for sFileName in os.listdir("../res/Unformatted"):
+        iTotalErrorFileCount = 0
+        for sFileName in os.listdir("../res/Input"):
             if sFileName.split(".")[-1] != "xlsx" or "~$" in sFileName or "template" in sFileName.lower():
                 print("sFileName(IGNORED): "+sFileName)
                 continue
             print("sFileName:"+sFileName)
-            sFilePath = "../res/Unformatted/"+sFileName
+            sFilePath = "../res/Input/"+sFileName
             #---Open file
             vWorkbook = openpyxl.load_workbook(sFilePath)
             vSheet = vWorkbook.active
@@ -26,29 +26,29 @@ def Main():
             vNewSheet = vNewWorkbook.active
             #---Edit
             bSuccess = True
-            bSuccess &= FRD.SplitName(vSheet,vNewSheet)
-            bSuccess &= FRD.SplitTown(vSheet,vNewSheet)
-            bSuccess &= FRD.TranslateHeight(vSheet,vNewSheet)
+            bSuccess &= FRD.FormatName(vSheet,vNewSheet)
+            bSuccess &= FRD.FormatHometown(vSheet,vNewSheet)
+            bSuccess &= FRD.FormatHeight(vSheet,vNewSheet)
             if not "women" in sFileName.lower():
-                bSuccess &= FRD.GetWeight(vSheet,vNewSheet)
-            bSuccess &= FRD.GetSchoolyear(vSheet,vNewSheet)
+                bSuccess &= FRD.FormatWeight(vSheet,vNewSheet)
+            bSuccess &= FRD.FormatSchoolyear(vSheet,vNewSheet)
             bSuccess &= FRD.AppendOldSheet(vSheet,vNewSheet)
             #---Save
             if not bSuccess:
                 print("SaveName:"+sFileName.split(".")[0]+"_Reformatted(ERRORS).xlsx")
                 vNewWorkbook.save(sFileName.split(".")[0]+"_Reformatted(ERRORS).xlsx")
-                iTotalErrorCount += 1
+                iTotalErrorFileCount += 1
             else:
                 print("SaveName:"+sFileName.split(".")[0]+"_Reformatted.xlsx")
                 vNewWorkbook.save(sFileName.split(".")[0]+"_Reformatted.xlsx")
-    if iTotalErrorCount:
-        print("ERRORS`iTotalErrorCount:"+str(iTotalErrorCount))
+    if iTotalErrorFileCount:
+        print("TOTAL ERRORS`iTotalErrorFileCount:"+str(iTotalErrorFileCount))
     else:
-        print("Success`iTotalErrorCount:"+str(iTotalErrorCount))
+        print("Success`iTotalErrorFileCount:"+str(iTotalErrorFileCount))
 
 try:
     Main()
 except PermissionError:
-    print("PERMISSION_ERROR")
+    print("PERMISSION_ERROR\n\tI'd recommend to just try again.\n\tOtherwise, close all extra programs and then retry.")
 if bPause:
     TM.DisplayDone()

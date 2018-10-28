@@ -5,7 +5,7 @@ import os
 cRequires = ('TM_CommonPy','nose','pandas','XlsxWriter','openpyxl')
 
 setup(name='FormatRosterData'
-    ,version='0.1.02'
+    ,version='0.1.04'
     ,description=''
     ,author='Troy1010'
     #,author_email=''

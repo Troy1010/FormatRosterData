@@ -21,6 +21,8 @@ def GetDict_NameToURL(sURL):
     #---
     cNameToURL = dict()
     for vItem in vList:
+        if "More NCAAM teams" == DigForText(vItem): #Irrelevant key and value
+            continue
         cNameToURL[DigForText(vItem)] = vItem.attrib['data-url']
     return cNameToURL
 

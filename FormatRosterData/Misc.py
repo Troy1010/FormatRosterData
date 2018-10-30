@@ -159,7 +159,7 @@ def FormatWeight(vOldSheet,vNewSheet):
     #---Determine Weight Header Col and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
         try:
-            if "wt." in vCell.value.lower() or "weight" in vCell.value.lower():
+            if "wt." in vCell.value.lower() or "weight" in vCell.value.lower() or "WT" == vCell.value:
                 iHeaderRow = vCell.row
                 sColumn = vCell.column
                 break

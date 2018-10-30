@@ -2,10 +2,10 @@ from setuptools import setup
 #from cx_Freeze import setup,Executable
 import os
 
-cRequires = ('TM_CommonPy','nose','pandas','XlsxWriter','openpyxl')
+cRequires = ('TM_CommonPy','nose','pandas','XlsxWriter','openpyxl', 'requests')
 
 setup(name='FormatRosterData'
-    ,version='0.1.04'
+    ,version='1.0.4'
     ,description=''
     ,author='Troy1010'
     #,author_email=''

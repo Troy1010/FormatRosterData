@@ -32,6 +32,7 @@ def Main():
             if not "women" in sFileName.lower():
                 bSuccess &= FRD.FormatWeight(vSheet,vNewSheet)
             bSuccess &= FRD.FormatSchoolyear(vSheet,vNewSheet)
+            bSuccess &= FRD.FormatPosition(vSheet,vNewSheet)
             bSuccess &= FRD.AppendOldSheet(vSheet,vNewSheet)
             #---Save
             if not bSuccess:
@@ -42,7 +43,7 @@ def Main():
                 print("SaveName:"+sFileName.split(".")[0]+"_Reformatted.xlsx")
                 vNewWorkbook.save(sFileName.split(".")[0]+"_Reformatted.xlsx")
     if iTotalErrorFileCount:
-        print("TOTAL ERRORS`iTotalErrorFileCount:"+str(iTotalErrorFileCount))
+        print("TOTAL ERROR FILES`iTotalErrorFileCount:"+str(iTotalErrorFileCount))
     else:
         print("Success`iTotalErrorFileCount:"+str(iTotalErrorFileCount))
 
@@ -50,5 +51,9 @@ try:
     Main()
 except PermissionError:
     print("PERMISSION_ERROR\n\tI'd recommend to just try again.\n\tOtherwise, close all extra programs and then retry.")
-if bPause:
     TM.DisplayDone()
+except Exception as e:
+    TM.DisplayException(e)
+else:
+    if bPause:
+        TM.DisplayDone()

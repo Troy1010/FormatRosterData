@@ -93,12 +93,34 @@ def ConvertDateToHeight(vDate):
     cTemp = str(vDate).split("-")
     return int(cTemp[1])*12+int(cTemp[2].split(None)[0])
 
+def ConvertHeightStrToHeight(vHeightStr):
+    #---Filter
+    if vHeightStr is None:
+        return ""
+    #---
+    cNumbers = []
+    bFoundDigit = False;
+    sDigit = ""
+    for i,c in enumerate(vHeightStr):
+        if c.isdigit():
+            bFoundDigit = True
+            sDigit += c
+        elif bFoundDigit:
+            bFoundDigit = False
+            cNumbers.append(int(sDigit))
+            sDigit = ""
+    if bFoundDigit:
+        bFoundDigit = False
+        cNumbers.append(int(sDigit))
+        sDigit = ""
+    return cNumbers[0]*12+cNumbers[1]
+
 def FormatHeight(vOldSheet,vNewSheet):
     bSuccess = True
     #---Determine Height Header Col and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
         try:
-            if "ht." in vCell.value.lower() or "height" in vCell.value.lower():
+            if "ht." in vCell.value.lower() or "height" in vCell.value.lower() or "ht" == vCell.value.lower():
                 iHeaderRow = vCell.row
                 sColumn = vCell.column
                 break
@@ -121,7 +143,15 @@ def FormatHeight(vOldSheet,vNewSheet):
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = "Height"
             continue
         #-
-        vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = ConvertDateToHeight(vCell.value)
+        if vCell.value is None:
+            pass
+        elif "-" in str(vCell.value):
+            vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = ConvertDateToHeight(vCell.value)
+        elif "\"" in str(vCell.value):
+            vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = ConvertHeightStrToHeight(vCell.value)
+        else:
+            print("**ERROR:Could not determine Height's format from:"+str(vCell.value))
+            bSuccess = False
     return bSuccess
 
 def FormatWeight(vOldSheet,vNewSheet):
@@ -159,13 +189,13 @@ def FormatWeight(vOldSheet,vNewSheet):
     return bSuccess
 
 def ConvertFshSophJrSenToInt(vValue):
-    if "fr." in vValue.lower() or "freshman" in vValue.lower():
+    if "fr." in vValue.lower() or "freshman" in vValue.lower() or "fr" == vValue.lower():
         return 1
-    elif "so." in vValue.lower() or "sophmore" in vValue.lower() or "soph" in vValue.lower():
+    elif "so." in vValue.lower() or "sophmore" in vValue.lower() or "soph" in vValue.lower() or "so" == vValue.lower():
         return 2
-    elif "jr." in vValue.lower() or "junior" in vValue.lower():
+    elif "jr." in vValue.lower() or "junior" in vValue.lower()  or "jr" == vValue.lower():
         return 3
-    elif "sr." in vValue.lower() or "senior" in vValue.lower() or "gr." in vValue.lower() or "sn." in vValue.lower():
+    elif "sr." in vValue.lower() or "senior" in vValue.lower() or "gr." in vValue.lower() or "sn." in vValue.lower()  or "sr" == vValue.lower()  or "gr" == vValue.lower():
         return 4
     else:
         return
@@ -175,7 +205,7 @@ def FormatSchoolyear(vOldSheet,vNewSheet):
     #---Determine GetSchoolyear Header Col and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
         try:
-            if "cl." in vCell.value.lower() or "year" in vCell.value.lower() or "yr." in vCell.value.lower():
+            if "cl." in vCell.value.lower() or "class" in vCell.value.lower() or "year" in vCell.value.lower() or "yr." in vCell.value.lower():
                 iHeaderRow = vCell.row
                 sColumn = vCell.column
                 break
@@ -203,6 +233,45 @@ def FormatSchoolyear(vOldSheet,vNewSheet):
             print("**ERROR:Could not translate FshSophJrSen number from:"+str(vCell.value))
             bSuccess = False
         vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = iInt
+    return bSuccess
+
+
+def FormatPosition(vOldSheet,vNewSheet):
+    bSuccess = True
+    #---Determine FormatPosition Header Col and Row
+    for vCell in (vOldSheet['1']+vOldSheet['2']):
+        try:
+            if "pos" in vCell.value.lower():
+                iHeaderRow = vCell.row
+                sColumn = vCell.column
+                break
+        except (TypeError, AttributeError):
+            pass
+    else:
+        print("**ERROR:Could not find \'Position\' header")
+        return False
+    #---Determine iPrevMaxCol
+    if IsEmptySheet(vNewSheet):
+        iPrevMaxCol = 0
+    else:
+        iPrevMaxCol = len(vNewSheet['1'])
+    #---
+    for vCell in vOldSheet[sColumn]:
+        #-header
+        if vCell.row < iHeaderRow:
+            continue
+        elif vCell.row == iHeaderRow:
+            vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = "Position"
+            continue
+        #-
+        if vCell.value is None:
+            pass
+        else:
+            sFormattedValue = ""
+            for sString in str(vCell.value).split("/"):
+                sFormattedValue += sString[0] + "/"
+            sFormattedValue = sFormattedValue[:-1]
+            vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = sFormattedValue
     return bSuccess
 
 def AppendOldSheet(vOldSheet,vNewSheet):

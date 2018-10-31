@@ -17,7 +17,8 @@ def GetDict_NameToURL(sURL):
     #---Get vList
     vRosterPage = requests.get(sURL)
     tree = lxml.html.fromstring(vRosterPage.content)
-    vList = tree.xpath('//*[@id="fittPageContainer"]/div[3]/div[2]/div[1]/div[1]/section/section/div[1]/div/select[1]')[0]
+    #vList = tree.xpath('//*[@id="fittPageContainer"]/div[3]/div[2]/div[1]/div[1]/section/section/div[1]/div/select[1]')[0]
+    vList = tree.xpath('//select[@class="dropdown__select"]')[1] #Perhaps there is a more reliable xpath
     #---
     cNameToURL = dict()
     for vItem in vList:

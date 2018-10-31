@@ -40,12 +40,15 @@ def FormatName(vOldSheet,vNewSheet):
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = "Name"
             continue
         #-
-        cSplitString = vCell.value.strip().split(None,1) #split None splits at first whitespace, a necessary bugfix
-        try:
-            vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = cSplitString[0]
-            vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+2)+str(vCell.row)] = cSplitString[1]
-        except IndexError:
-            bSuccess = False
+        if vCell.value is None:
+            pass
+        else:
+            cSplitString = vCell.value.strip().split(None,1) #split None splits at first whitespace, a necessary bugfix
+            try:
+                vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = cSplitString[0]
+                vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+2)+str(vCell.row)] = cSplitString[1]
+            except IndexError:
+                bSuccess = False
     return bSuccess
 
 def FormatHometown(vOldSheet,vNewSheet):
@@ -76,13 +79,16 @@ def FormatHometown(vOldSheet,vNewSheet):
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = "Hometown"
             continue
         #-
-        cSplitString = vCell.value.split(", ")
-        try:
-            vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = cSplitString[0]
-            vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+2)+str(vCell.row)] = cSplitString[1].split("/")[0].strip()
-        except:
-            bSuccess=False
-            raise
+        if vCell.value is None:
+            pass
+        else:
+            cSplitString = str(vCell.value).split(", ")
+            try:
+                vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = cSplitString[0]
+                vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+2)+str(vCell.row)] = cSplitString[1].split("/")[0].strip()
+            except:
+                bSuccess=False
+                raise
     return bSuccess
 
 def ConvertDateToHeight(vDate):
@@ -178,11 +184,15 @@ def FormatWeight(vOldSheet,vNewSheet):
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = "Weight"
             continue
         #-
-        cNums = TM.GetNumsInString(str(vCell.value))
-        if len(cNums) != 1:
-            bSuccess=False
-            print("**ERROR:Could not determine weight number from:"+str(vCell.value))
-        vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = cNums[0]
+        if vCell.value is None:
+            pass
+        else:
+            cNums = TM.GetNumsInString(str(vCell.value))
+            if len(cNums) != 1:
+                bSuccess=False
+                print("**ERROR:Could not determine weight number from:"+str(vCell.value))
+            else:
+                vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = cNums[0]
     return bSuccess
 
 def ConvertFshSophJrSenToInt(vValue):
@@ -225,11 +235,14 @@ def FormatSchoolyear(vOldSheet,vNewSheet):
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = "Year"
             continue
         #-
-        iInt = ConvertFshSophJrSenToInt(vCell.value)
-        if iInt is None:
-            print("**ERROR:Could not translate FshSophJrSen number from:"+str(vCell.value))
-            bSuccess = False
-        vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = iInt
+        if vCell.value is None:
+            pass
+        else:
+            iInt = ConvertFshSophJrSenToInt(vCell.value)
+            if iInt is None:
+                print("**ERROR:Could not translate FshSophJrSen number from:"+str(vCell.value))
+                bSuccess = False
+            vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = iInt
     return bSuccess
 
 

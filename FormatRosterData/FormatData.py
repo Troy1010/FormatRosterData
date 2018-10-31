@@ -24,7 +24,7 @@ def FormatName(vOldSheet,vNewSheet):
         return False
     #---
     iPrevMaxCol = TM_OP.GetMaxCol(vNewSheet)
-    for vCell in vOldSheet['B']:
+    for vCell in vOldSheet[sColumn]:
         #-header
         if vCell.row < iHeaderRow:
             continue

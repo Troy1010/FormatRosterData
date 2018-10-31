@@ -11,16 +11,14 @@ sLogFile = os.path.join(__file__,'..','FRDLog.log')
 
 class DefaultFilter(logging.Filter):
     def filter(self, record):
-        if hasattr(record,"bFormat"):
-            if not record.bFormat:
-                record.levelname = 'Super App'
+        if hasattr(record,"sOverrideLevelName"):
+            record.levelname = record.sOverrideLevelName
         return record
 
 FRDLog = logging.getLogger(__name__)
 FRDLog.setLevel(vMasterThreshold)
 FRDLog.addFilter(DefaultFilter())
 vFormatter = logging.Formatter('%(levelname)-9s %(message)s')
-#FRDLog.addFilter(DefaultFilter())
 #---ConsoleHandler
 vConsoleHandler = logging.StreamHandler()
 vConsoleHandler.setLevel(vConsoleHandlerThreshold)

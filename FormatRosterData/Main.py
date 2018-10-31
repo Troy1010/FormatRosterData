@@ -99,7 +99,7 @@ def Main():
 try:
     Main()
 except PermissionError:
-    FRDLog.error("PERMISSION_ERROR\n\t\tI'd recommend to just try again.\n\t\tOtherwise, close all extra programs and then retry.",extra={'bFormat': False})
+    FRDLog.error("\n\tI'd recommend to just try again.\n\tOtherwise, close all extra programs and then retry.",extra={'sOverrideLevelName': "PERMISSION_ERROR"})
     TM.DisplayDone()
 except Exception as e:
     TM.DisplayException(e)

@@ -10,24 +10,33 @@ import openpyxl
 import TM_CommonPy as TM
 import traceback
 from FormatRosterData._Logger import FRDLog
+from FormatRosterData._Logger import vFormatter #awkward
+import logging
 ##endregion
 
 def Main():
     with TM.WorkspaceContext("Output",bCDInto=True,bPreDelete=True):
-        iTotalErrorFileCount = 0
+        #-Add Report_Full.txt handler to FRDLog
+        vFileHandler = logging.FileHandler("__Report_Full.txt")
+        vFileHandler.setFormatter(vFormatter)
+        vFileHandler.setLevel(1)
+        FRDLog.addHandler(vFileHandler)
+        #-
+        cUnmatchedFileNames = []
+        cFormattingErrorFileNames = []
         cWorkbooksToReformat = [] #Expects value to be tuple(vOldWorkbook,sFileName)
         #---Output cNameToURL_Men.txt, cNameToURL_Women.txt
         FRDLog.info("---Getting NameToURL lists---")
         cNameToURL_Men = FRD.GetDict_NameToURL_Men()
-        with open('cNameToURL_Men.txt','w') as vFile:
+        with open('__cNameToURL_Men.txt','w') as vFile:
             for vKey, vValue in cNameToURL_Men.items():
                 vFile.write(vKey + " : " + vValue + "\n")
-        FRDLog.info("cNameToURL_Men.txt complete")
+        FRDLog.info("__cNameToURL_Men.txt complete")
         cNameToURL_Women = FRD.GetDict_NameToURL_Women()
-        with open('cNameToURL_Women.txt','w') as vFile:
+        with open('__cNameToURL_Women.txt','w') as vFile:
             for vKey, vValue in cNameToURL_Women.items():
                 vFile.write(vKey + " : " + vValue + "\n")
-        FRDLog.info("cNameToURL_Women.txt complete")
+        FRDLog.info("__cNameToURL_Women.txt complete")
         #---Get OldWorkbooks
         FRDLog.info("---Collecting unformatted sheets---")
         for sFileName in os.listdir(sInputFolderPath):
@@ -63,10 +72,11 @@ def Main():
                                 cWorkbooksToReformat.append((vOldWorkbook,sScrapedFileName))
                                 break
                         else:
+                            cUnmatchedFileNames.append(sLine)
                             FRDLog.info(sFileName+" - Could not match:"+sLine)
             else:
-                iTotalErrorFileCount += 1
-                FRDLog.warning("Could not get workbook from sFileName:"+sFileName)
+                cUnmatchedFileNames.append(sFileName)
+                FRDLog.warning("Could not get workbook from file:"+sFileName)
                 continue
         #---Create NewWorkbooks
         FRDLog.info("---Creating formatted sheets---")
@@ -88,18 +98,35 @@ def Main():
             #---Save
             if FRDLog.warning.WasCalled():
                 FRDLog.warning.ClearWasCalledRecord()
-                iTotalErrorFileCount += 1
-                sFileName = "aa(ERRORS)_"+sFileName.split(".")[0]+"_Reformatted.xlsx"
+                sFileName = "_ERRORS_"+sFileName.split(".")[0]+"_Reformatted.xlsx"
+                cFormattingErrorFileNames.append(sFileName)
             else:
                 sFileName = sFileName.split(".")[0]+"_Reformatted.xlsx"
             FRDLog.info("New_FileName:"+sFileName)
             vNewWorkbook.save(sFileName)
+        #---Report
+        FRDLog.info("---Report---")
+        #-Add Report.txt handler to FRDLog
+        vFileHandler = logging.FileHandler("__Report.txt")
+        vFileHandler.setFormatter(logging.Formatter('%(message)s'))
+        vFileHandler.setLevel(1)
+        FRDLog.addHandler(vFileHandler)
+        #-
+        if cFormattingErrorFileNames:
+            FRDLog.info("\t"+str(len(cFormattingErrorFileNames)) + " ERROR FILES")
+            for sFileName in cFormattingErrorFileNames:
+                FRDLog.info(sFileName)
+        else:
+            FRDLog.info("There were no errors.")
+        if cUnmatchedFileNames:
+            FRDLog.info("\t"+str(len(cUnmatchedFileNames)) + " UNMATCHED")
+            for sFileName in cUnmatchedFileNames:
+                FRDLog.info(sFileName)
+        else:
+            FRDLog.info("There were no unmatched files.")
+        #-Remove temporary handlers from FRDLog
+        FRDLog.handlers = [h for h in FRDLog.handlers if hasattr(h,"baseFilename") and not "report" in os.path.basename(h.baseFilename).lower()]
 
-
-    if iTotalErrorFileCount:
-        FRDLog.info("TOTAL ERROR FILES`iTotalErrorFileCount:"+str(iTotalErrorFileCount))
-    else:
-        FRDLog.info("Success`iTotalErrorFileCount:"+str(iTotalErrorFileCount))
 
 try:
     Main()

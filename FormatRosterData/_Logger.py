@@ -14,21 +14,14 @@ class CallCounted:
 
     def __init__(self,method):
         self.method=method
-        self.iCount=0
-        self.bWasCalled = False
+        self.iCallCount=0
 
     def __call__(self,*args,**kwargs):
-        self.iCount+=1
-        self.bWasCalled = True
+        self.iCallCount+=1
         return self.method(*args,**kwargs)
 
-    def WasCalled(self):
-        if self.bWasCalled:
-            return True
-        return False
-
-    def ClearWasCalledRecord(self):
-        self.bWasCalled = False
+    def ClearCallCount(self):
+        self.iCallCount=0
 
 class DefaultFilter(logging.Filter):
     def filter(self, record):

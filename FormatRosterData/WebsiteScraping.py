@@ -56,7 +56,7 @@ def GetTitle(sURL):
     if vRosterTitle is None:
         FRDLog.warning("vRosterTitle is None")
         raise
-    return DigForText(vRosterTitle).replace(" ","")
+    return DigForText(vRosterTitle).replace(" ","").rstrip("Roster")
 
 def GetWorkbook_Men(sURL):
     #---Get RosterTable

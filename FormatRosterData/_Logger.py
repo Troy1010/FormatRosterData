@@ -1,17 +1,36 @@
 ##region Settings
 import os
-bWriteLog = True
+import logging
+#---
+vMasterThreshold = logging.DEBUG
+vConsoleHandlerThreshold = logging.DEBUG
+vFileHandlerThreshold = logging.DEBUG
+bWriteLogFile = True
 sLogFile = os.path.join(__file__,'..','FRDLog.log')
 ##endregion
-##region LogInit
-import logging
+
+class AppFilter(logging.Filter):
+    def filter(self, record):
+        if hasattr(record,"bFormat"):
+            if not record.bFormat:
+                record.levelname = 'Super App'
+        return record
+
 FRDLog = logging.getLogger(__name__)
-FRDLog.setLevel(logging.DEBUG)
+FRDLog.setLevel(vMasterThreshold)
+#---ConsoleHandler
+vConsoleHandler = logging.StreamHandler()
+vConsoleHandler.setLevel(vConsoleHandlerThreshold)
+vFormatter = logging.Formatter('%(levelname)-9s %(message)s')
+vConsoleHandler.setFormatter(vFormatter)
+vConsoleHandler.addFilter(AppFilter())
+FRDLog.addHandler(vConsoleHandler)
+#---FileHandler
 try:
     os.remove(sLogFile)
 except (PermissionError,FileNotFoundError):
     pass
-if bWriteLog:
+if bWriteLogFile:
     bLogFileIsOpen = False
     try:
         os.rename(sLogFile,sLogFile)
@@ -20,5 +39,6 @@ if bWriteLog:
     except FileNotFoundError:
         pass
     if not bLogFileIsOpen:
-        FRDLog.addHandler(logging.FileHandler(sLogFile))
-##endregion
+        vFileHandler = logging.FileHandler(sLogFile)
+        vFileHandler.setLevel(vFileHandlerThreshold)
+        FRDLog.addHandler(vFileHandler)

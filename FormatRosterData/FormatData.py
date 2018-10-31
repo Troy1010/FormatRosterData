@@ -2,7 +2,8 @@ import os
 import openpyxl
 import TM_CommonPy as TM
 import TM_CommonPy.openpyxl as TM_OP
-import warnings
+import logging
+from FormatRosterData._Logger import FRDLog
 
 def DefaultIgnoreTest(vValue):
     return vValue is None or str(vValue) in ("-","--")
@@ -19,7 +20,7 @@ def FormatName(vOldSheet,vNewSheet):
         except (TypeError, AttributeError):
             pass
     else:
-        warnings.warn("**WARNING:Could not find \'Name\' header")
+        FRDLog.warning("Could not find \'Name\' header")
         return False
     #---
     iPrevMaxCol = TM_OP.GetMaxCol(vNewSheet)

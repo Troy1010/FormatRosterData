@@ -22,10 +22,12 @@ def Main():
         with open('cNameToURL_Men.txt','w') as vFile:
             for vKey, vValue in cNameToURL_Men.items():
                 vFile.write(vKey + " : " + vValue + "\n")
+        FRDLog.info("cNameToURL_Men.txt complete")
         cNameToURL_Women = FRD.GetDict_NameToURL_Women()
         with open('cNameToURL_Women.txt','w') as vFile:
             for vKey, vValue in cNameToURL_Women.items():
                 vFile.write(vKey + " : " + vValue + "\n")
+        FRDLog.info("cNameToURL_Women.txt complete")
         #---Get OldWorkbooks
         FRDLog.info("---Collecting unformatted sheets---")
         for sFileName in os.listdir(sInputFolderPath):
@@ -68,29 +70,32 @@ def Main():
                 continue
         #---Create NewWorkbooks
         FRDLog.info("---Creating formatted sheets---")
+        FRDLog.warning.ClearWasCalledRecord()
         for vOldWorkbook, sFileName in cWorkbooksToReformat:
             FRDLog.info("OldFileName:"+sFileName)
             #---Edit
             vOldSheet = vOldWorkbook.active
             vNewWorkbook = openpyxl.Workbook()
             vNewSheet = vNewWorkbook.active
-            bSuccess = True
-            bSuccess &= FRD.FormatName(vOldSheet,vNewSheet)
-            bSuccess &= FRD.FormatHometown(vOldSheet,vNewSheet)
-            bSuccess &= FRD.FormatHeight(vOldSheet,vNewSheet)
+            FRD.FormatName(vOldSheet,vNewSheet)
+            FRD.FormatHometown(vOldSheet,vNewSheet)
+            FRD.FormatHeight(vOldSheet,vNewSheet)
             if not "women" in sFileName.lower():
-                bSuccess &= FRD.FormatWeight(vOldSheet,vNewSheet)
-            bSuccess &= FRD.FormatSchoolyear(vOldSheet,vNewSheet)
-            bSuccess &= FRD.FormatPosition(vOldSheet,vNewSheet)
-            bSuccess &= FRD.AppendOldSheet(vOldSheet,vNewSheet)
+                FRD.FormatWeight(vOldSheet,vNewSheet)
+            FRD.FormatSchoolyear(vOldSheet,vNewSheet)
+            FRD.FormatPosition(vOldSheet,vNewSheet)
+            FRD.AppendOldSheet(vOldSheet,vNewSheet)
             #---Save
-            if not bSuccess:
-                FRDLog.info("New_FileName:"+sFileName.split(".")[0]+"_Reformatted(ERRORS).xlsx")
-                vNewWorkbook.save(sFileName.split(".")[0]+"_Reformatted(ERRORS).xlsx")
+            if FRDLog.warning.WasCalled():
+                FRDLog.warning.ClearWasCalledRecord()
                 iTotalErrorFileCount += 1
+                sFileName = "aa(ERRORS)_"+sFileName.split(".")[0]+"_Reformatted.xlsx"
             else:
-                FRDLog.info("New_FileName:"+sFileName.split(".")[0]+"_Reformatted.xlsx")
-                vNewWorkbook.save(sFileName.split(".")[0]+"_Reformatted.xlsx")
+                sFileName = sFileName.split(".")[0]+"_Reformatted.xlsx"
+            FRDLog.info("New_FileName:"+sFileName)
+            vNewWorkbook.save(sFileName)
+
+
     if iTotalErrorFileCount:
         FRDLog.info("TOTAL ERROR FILES`iTotalErrorFileCount:"+str(iTotalErrorFileCount))
     else:

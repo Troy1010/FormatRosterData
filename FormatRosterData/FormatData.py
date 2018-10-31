@@ -9,7 +9,6 @@ def DefaultIgnoreTest(vValue):
     return vValue is None or str(vValue) in ("-","--")
 
 def FormatName(vOldSheet,vNewSheet):
-    bSuccess = True
     #---Determine Name Header Column and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
         try:
@@ -31,19 +30,17 @@ def FormatName(vOldSheet,vNewSheet):
         elif vCell.row == iHeaderRow:
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = "Name"
             continue
+        #-
         if DefaultIgnoreTest(vCell.value):
             continue
-        #-
-        cSplitString = vCell.value.strip().split(None,1) #split None splits at first whitespace, a necessary bugfix
-        try:
+        cSplitString = str(vCell.value).strip().split(None,1) #split None splits at first whitespace, a necessary bugfix
+        if len(cSplitString) != 2:
+            FRDLog.warning("Could not get name from:"+str(vCell.value))
+        else:
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = cSplitString[0]
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+2)+str(vCell.row)] = cSplitString[1]
-        except IndexError:
-            bSuccess = False
-    return bSuccess
 
 def FormatHometown(vOldSheet,vNewSheet):
-    bSuccess = True
     #---Determine Town Header Column and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
         try:
@@ -68,38 +65,27 @@ def FormatHometown(vOldSheet,vNewSheet):
             continue
         #-
         cSplitString = str(vCell.value).split(", ")
-        try:
+        if len(cSplitString) != 2:
+            FRDLog.warning("Could not get hometown from:"+str(vCell.value))
+        else:
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = cSplitString[0]
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+2)+str(vCell.row)] = cSplitString[1].split("/")[0].strip()
-        except:
-            bSuccess=False
-            raise
-    return bSuccess
 
 def ConvertDateToHeight(vDate):
-    #---Filter
-    if vDate is None:
-        return ""
-    #---
     cTemp = str(vDate).split("-")
     if len(cTemp) < 3:
-        FRDLog.warning("Could not get height number from date:"+str(vDate))
+        FRDLog.warning("Could not get height from date:"+str(vDate))
         return
     return int(cTemp[1])*12+int(cTemp[2].split(None)[0])
 
-def ConvertHeightStrToHeight(vHeightStr):
-    #---Filter
-    if vHeightStr is None:
-        return ""
-    #---
-    cNums = TM.GetNumsInString(vHeightStr)
+def ConvertHeightStrToHeight(vHeight): #what a silly name
+    cNums = TM.GetNumsInString(str(vHeight))
     if len(cNums) != 2:
-        FRDLog.warning("Could not get height number from:"+vHeightStr)
+        FRDLog.warning("Could not get height from:"+vHeight)
         return
     return cNums[0]*12+cNums[1]
 
 def FormatHeight(vOldSheet,vNewSheet):
-    bSuccess = True
     #---Determine Height Header Col and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
         try:
@@ -126,18 +112,11 @@ def FormatHeight(vOldSheet,vNewSheet):
         if "00:00:00" in str(vCell.value): #it's a date
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = ConvertDateToHeight(vCell.value)
         elif "\"" in str(vCell.value) or "-" in str(vCell.value): #it's   5'11" OR 5-11
-            iHeight = ConvertHeightStrToHeight(vCell.value)
-            if iHeight is None:
-                bSuccess = False
-            else:
-                vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = iHeight
+            vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = ConvertHeightStrToHeight(vCell.value)
         else:
-            FRDLog.warning("Could not determine Height's format from:"+str(vCell.value))
-            bSuccess = False
-    return bSuccess
+            FRDLog.warning("Could not determine how I should format height from:"+str(vCell.value))
 
 def FormatWeight(vOldSheet,vNewSheet):
-    bSuccess = True
     #---Determine Weight Header Col and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
         try:
@@ -166,13 +145,12 @@ def FormatWeight(vOldSheet,vNewSheet):
         #-
         cNums = TM.GetNumsInString(str(vCell.value))
         if len(cNums) != 1:
-            bSuccess=False
             FRDLog.warning("Could not determine weight number from:"+str(vCell.value))
         else:
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = cNums[0]
-    return bSuccess
 
 def ConvertFshSophJrSenToInt(vValue):
+    vValue = str(vValue)
     if "fr." in vValue.lower() or "freshman" in vValue.lower() or "fr" == vValue.lower():
         return 1
     elif "so." in vValue.lower() or "sophmore" in vValue.lower() or "soph" in vValue.lower() or "so" == vValue.lower():
@@ -182,10 +160,9 @@ def ConvertFshSophJrSenToInt(vValue):
     elif "sr." in vValue.lower() or "senior" in vValue.lower() or "gr." in vValue.lower() or "sn." in vValue.lower()  or "sr" == vValue.lower()  or "gr" == vValue.lower():
         return 4
     else:
-        return
+        FRDLog.warning("Could not determine Schoolyear from:"+vValue)
 
 def FormatSchoolyear(vOldSheet,vNewSheet):
-    bSuccess = True
     #---Determine GetSchoolyear Header Col and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
         try:
@@ -210,15 +187,9 @@ def FormatSchoolyear(vOldSheet,vNewSheet):
         if DefaultIgnoreTest(vCell.value):
             continue
         #-
-        iInt = ConvertFshSophJrSenToInt(vCell.value)
-        if iInt is None:
-            FRDLog.warning("Could not translate FshSophJrSen number from:"+str(vCell.value))
-            bSuccess = False
-        vNewSheet[sPosToWriteTo] = iInt
-    return bSuccess
+        vNewSheet[sPosToWriteTo] = ConvertFshSophJrSenToInt(vCell.value)
 
 def FormatPosition(vOldSheet,vNewSheet):
-    bSuccess = True
     #---Determine FormatPosition Header Col and Row
     for vCell in (vOldSheet['1']+vOldSheet['2']):
         try:
@@ -247,16 +218,12 @@ def FormatPosition(vOldSheet,vNewSheet):
             sFormattedValue += sString[0] + "/"
         sFormattedValue = sFormattedValue[:-1]
         vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = sFormattedValue
-    return bSuccess
 
 def AppendOldSheet(vOldSheet,vNewSheet):
     iPrevMaxCol = len(vNewSheet['1'])
-    bSuccess = True
     try:
         for cColumn in vOldSheet.iter_cols():
             for vCell in cColumn:
                 vNewSheet[TM_OP.PosByCell(vCell,iColAdjustment=iPrevMaxCol+2)] = vCell.value
     except:
         FRDLog.warning("Could not append old sheet")
-        bSuccess=False
-    return bSuccess

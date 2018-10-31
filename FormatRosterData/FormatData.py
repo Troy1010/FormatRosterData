@@ -54,7 +54,7 @@ def FormatHometown(vOldSheet,vNewSheet):
         except (TypeError, AttributeError):
             pass
     else:
-        print("**ERROR:Could not find \'Hometown\' header")
+        FRDLog.warning("Could not find \'Hometown\' header")
         return False
     iPrevMaxCol = TM_OP.GetMaxCol(vNewSheet)
     for vCell in vOldSheet[sColumn]:
@@ -83,7 +83,7 @@ def ConvertDateToHeight(vDate):
     #---
     cTemp = str(vDate).split("-")
     if len(cTemp) < 3:
-        print("**ERROR:Could not get height number from date:"+str(vDate))
+        FRDLog.warning("Could not get height number from date:"+str(vDate))
         return
     return int(cTemp[1])*12+int(cTemp[2].split(None)[0])
 
@@ -94,7 +94,7 @@ def ConvertHeightStrToHeight(vHeightStr):
     #---
     cNums = TM.GetNumsInString(vHeightStr)
     if len(cNums) != 2:
-        print("**ERROR:Could not get height number from:"+vHeightStr)
+        FRDLog.warning("Could not get height number from:"+vHeightStr)
         return
     return cNums[0]*12+cNums[1]
 
@@ -110,7 +110,7 @@ def FormatHeight(vOldSheet,vNewSheet):
         except (TypeError, AttributeError):
             pass
     else:
-        print("**ERROR:Could not find \'Height\' header")
+        FRDLog.warning("Could not find \'Height\' header")
         return False
     iPrevMaxCol = TM_OP.GetMaxCol(vNewSheet)
     for vCell in vOldSheet[sColumn]:
@@ -132,7 +132,7 @@ def FormatHeight(vOldSheet,vNewSheet):
             else:
                 vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = iHeight
         else:
-            print("**ERROR:Could not determine Height's format from:"+str(vCell.value))
+            FRDLog.warning("Could not determine Height's format from:"+str(vCell.value))
             bSuccess = False
     return bSuccess
 
@@ -148,10 +148,10 @@ def FormatWeight(vOldSheet,vNewSheet):
         except (TypeError, AttributeError):
             pass
     else:
-        print("**ERROR:Could not find \'Weight\' header."
-            "\n\tIf its a Women's excel sheet, you can rename the excel"
-            "\n\tsheet to include the word \'Women\' so that this program"
-            "\n\tdoesn't try to find the weight column.")
+        FRDLog.warning("Could not find \'Weight\' header."
+            "\n     If its a Women's excel sheet, you can rename the excel"
+            "\n     sheet to include the word \'Women\' so that this program"
+            "\n     doesn't try to find the weight column.")
         return False
     iPrevMaxCol = TM_OP.GetMaxCol(vNewSheet)
     for vCell in vOldSheet[sColumn]:
@@ -167,7 +167,7 @@ def FormatWeight(vOldSheet,vNewSheet):
         cNums = TM.GetNumsInString(str(vCell.value))
         if len(cNums) != 1:
             bSuccess=False
-            print("**ERROR:Could not determine weight number from:"+str(vCell.value))
+            FRDLog.warning("Could not determine weight number from:"+str(vCell.value))
         else:
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = cNums[0]
     return bSuccess
@@ -196,7 +196,7 @@ def FormatSchoolyear(vOldSheet,vNewSheet):
         except (TypeError, AttributeError):
             pass
     else:
-        print("**ERROR:Could not find \'Schoolyear\' header")
+        FRDLog.warning("Could not find \'Schoolyear\' header")
         return False
     iPrevMaxCol = TM_OP.GetMaxCol(vNewSheet)
     for vCell in vOldSheet[sColumn]:
@@ -212,7 +212,7 @@ def FormatSchoolyear(vOldSheet,vNewSheet):
         #-
         iInt = ConvertFshSophJrSenToInt(vCell.value)
         if iInt is None:
-            print("**ERROR:Could not translate FshSophJrSen number from:"+str(vCell.value))
+            FRDLog.warning("Could not translate FshSophJrSen number from:"+str(vCell.value))
             bSuccess = False
         vNewSheet[sPosToWriteTo] = iInt
     return bSuccess
@@ -229,7 +229,7 @@ def FormatPosition(vOldSheet,vNewSheet):
         except (TypeError, AttributeError):
             pass
     else:
-        print("**ERROR:Could not find \'Position\' header")
+        FRDLog.warning("Could not find \'Position\' header")
         return False
     iPrevMaxCol = TM_OP.GetMaxCol(vNewSheet)
     for vCell in vOldSheet[sColumn]:
@@ -257,6 +257,6 @@ def AppendOldSheet(vOldSheet,vNewSheet):
             for vCell in cColumn:
                 vNewSheet[TM_OP.PosByCell(vCell,iColAdjustment=iPrevMaxCol+2)] = vCell.value
     except:
-        print("**ERROR:Could not append old sheet")
+        FRDLog.warning("Could not append old sheet")
         bSuccess=False
     return bSuccess

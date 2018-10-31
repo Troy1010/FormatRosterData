@@ -1,7 +1,7 @@
 ##region Setttings
 sInputFolderPath = "../res/Input"
 bPause = True
-bSkipScrapping = True
+bSkipScrapping = False
 ##endregion
 ##region Imports
 import os
@@ -17,7 +17,7 @@ def Main():
         iTotalErrorFileCount = 0
         cWorkbooksToReformat = [] #Expects value to be tuple(vOldWorkbook,sFileName)
         #---Output cNameToURL_Men.txt, cNameToURL_Women.txt
-        FRDLog.info("  Getting NameToURL lists..")
+        FRDLog.info("---Getting NameToURL lists---")
         cNameToURL_Men = FRD.GetDict_NameToURL_Men()
         with open('cNameToURL_Men.txt','w') as vFile:
             for vKey, vValue in cNameToURL_Men.items():
@@ -27,10 +27,10 @@ def Main():
             for vKey, vValue in cNameToURL_Women.items():
                 vFile.write(vKey + " : " + vValue + "\n")
         #---Get OldWorkbooks
-        FRDLog.info("  Gathering unformatted sheets..")
+        FRDLog.info("---Collecting unformatted sheets---")
         for sFileName in os.listdir(sInputFolderPath):
             if (not sFileName.split(".")[-1] in ["xlsx","txt"]) or "~$" in sFileName or "template" in sFileName.lower():
-                FRDLog.info("sFileName(IGNORED): "+sFileName)
+                FRDLog.info("IGNORED:"+sFileName)
                 continue
             elif sFileName.split(".")[-1] == "xlsx":
                 vOldWorkbook = openpyxl.load_workbook(os.path.join(sInputFolderPath,sFileName))
@@ -67,7 +67,7 @@ def Main():
                 FRDLog.warning("Could not get workbook from sFileName:"+sFileName)
                 continue
         #---Create NewWorkbooks
-        FRDLog.info("  Creating formatted sheets..")
+        FRDLog.info("---Creating formatted sheets---")
         for vOldWorkbook, sFileName in cWorkbooksToReformat:
             FRDLog.info("OldFileName:"+sFileName)
             #---Edit

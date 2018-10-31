@@ -3,6 +3,7 @@ import openpyxl
 import TM_CommonPy as TM
 import lxml.html
 import requests
+from FormatRosterData._Logger import FRDLog
 
 def DigForText(vElem):
     for i in range(15):
@@ -53,7 +54,7 @@ def GetTitle(sURL):
         #---Get vRosterTitle
         vRosterTitle = tree.xpath('//h1[@class="headline__h1 dib"]')[0]
     if vRosterTitle is None:
-        print("vRosterTitle is None")
+        FRDLog.warning("vRosterTitle is None")
         raise
     return DigForText(vRosterTitle).replace(" ","")
 

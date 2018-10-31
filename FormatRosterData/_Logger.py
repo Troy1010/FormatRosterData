@@ -18,7 +18,7 @@ class DefaultFilter(logging.Filter):
 FRDLog = logging.getLogger(__name__)
 FRDLog.setLevel(vMasterThreshold)
 FRDLog.addFilter(DefaultFilter())
-vFormatter = logging.Formatter('%(levelname)-9s %(message)s')
+vFormatter = logging.Formatter('%(levelname)-7s %(message)s')
 #---ConsoleHandler
 vConsoleHandler = logging.StreamHandler()
 vConsoleHandler.setLevel(vConsoleHandlerThreshold)

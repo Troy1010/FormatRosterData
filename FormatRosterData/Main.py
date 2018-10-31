@@ -28,14 +28,10 @@ def Main():
         #---Output cNameToURL_Men.txt, cNameToURL_Women.txt
         FRDLog.info("---Getting NameToURL lists---")
         cNameToURL_Men = FRD.GetDict_NameToURL_Men()
-        with open('__cNameToURL_Men.txt','w') as vFile:
-            for vKey, vValue in cNameToURL_Men.items():
-                vFile.write(vKey + " : " + vValue + "\n")
+        FRD.WriteDictToTxtFile(cNameToURL_Men,'__cNameToURL_Men.txt')
         FRDLog.info("__cNameToURL_Men.txt complete")
         cNameToURL_Women = FRD.GetDict_NameToURL_Women()
-        with open('__cNameToURL_Women.txt','w') as vFile:
-            for vKey, vValue in cNameToURL_Women.items():
-                vFile.write(vKey + " : " + vValue + "\n")
+        FRD.WriteDictToTxtFile(cNameToURL_Women,'__cNameToURL_Women.txt')
         FRDLog.info("__cNameToURL_Women.txt complete")
         #---Get OldWorkbooks
         FRDLog.info("---Collecting unformatted sheets---")

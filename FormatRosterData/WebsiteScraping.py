@@ -39,7 +39,7 @@ def GetDict_NameToURL_Women():
     #---
     cNameToURL = dict()
     for vItem in vList:
-        if "More NCAAM teams" == DigForText(vItem): #Irrelevant key and value
+        if DigForText(vItem) in ("Women's College Basketball Teams","More NCAAM teams"): #Irrelevant key and value
             continue
         cNameToURL[DigForText(vItem)] = "http:" + vItem.attrib['value']
     return cNameToURL

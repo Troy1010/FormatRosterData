@@ -1,5 +1,5 @@
 ##region Setttings
-sInputFolderpath = "../res/Input"
+sInputFolderPath = "../res/Input"
 bPause = True
 ##endregion
 ##region Imports
@@ -14,25 +14,35 @@ def Main():
     with TM.WorkspaceContext("Output",bCDInto=True,bPreDelete=True):
         iTotalErrorFileCount = 0
         cWorkbooksToReformat = [] #Expects value to be tuple(vOldWorkbook,sFileName)
-        #--- Write cNameToURL.txt
-        print("  Getting NameToURL list..")
-        cNameToURL = FRD.GetDict_NameToURL('http://www.espn.com/mens-college-basketball/team/roster/_/id/120')
-        TM.Delete("cNameToURL.txt")
-        with open('cNameToURL.txt','w') as vFile:
-            for vKey, vValue in cNameToURL.items():
+        #---Output cNameToURL_Men.txt, cNameToURL_Women.txt
+        print("  Getting NameToURL lists..")
+        cNameToURL_Men = FRD.GetDict_NameToURL_Men()
+        with open('cNameToURL_Men.txt','w') as vFile:
+            for vKey, vValue in cNameToURL_Men.items():
+                vFile.write(vKey + " : " + vValue + "\n")
+        cNameToURL_Women = FRD.GetDict_NameToURL_Women()
+        with open('cNameToURL_Women.txt','w') as vFile:
+            for vKey, vValue in cNameToURL_Women.items():
                 vFile.write(vKey + " : " + vValue + "\n")
         #---Get OldWorkbooks
         print("  Gathering unformatted sheets..")
-        for sFileName in os.listdir(sInputFolderpath):
+        for sFileName in os.listdir(sInputFolderPath):
             if (not sFileName.split(".")[-1] in ["xlsx","txt"]) or "~$" in sFileName or "template" in sFileName.lower():
                 print("sFileName(IGNORED): "+sFileName)
                 continue
             elif sFileName.split(".")[-1] == "xlsx":
-                sFilePath = "../res/Input/"+sFileName
-                vOldWorkbook = openpyxl.load_workbook(sFilePath)
+                vOldWorkbook = openpyxl.load_workbook(os.path.join(sInputFolderPath,sFileName))
                 cWorkbooksToReformat.append((vOldWorkbook,sFileName))
             elif sFileName.split(".")[-1] == "txt":
-                with open(os.path.join(sInputFolderpath,sFileName),'r') as vTextFile:
+                #-Determine cNameToURL
+                if "women" in sFileName.lower():
+                    bWomen = True
+                    cNameToURL = cNameToURL_Women
+                else:
+                    bWomen = False
+                    cNameToURL = cNameToURL_Men
+                #-
+                with open(os.path.join(sInputFolderPath,sFileName),'r') as vTextFile:
                     for sLine in vTextFile.readlines():
                         sLine = sLine.rstrip('\n') #probs a better way to do this.
                         if not sLine:
@@ -40,8 +50,12 @@ def Main():
                         for vKey in cNameToURL.keys():
                             if sLine.lower() in vKey.lower():
                                 print(sFileName+" -  MATCHED:"+sLine+"("+vKey+")")
-                                vOldWorkbook = FRD.GetWorkbook("http://www.espn.com"+cNameToURL[vKey])
-                                sScrapedFileName = "Scraped_"+FRD.GetTitle("http://www.espn.com"+cNameToURL[vKey])
+                                if bWomen:
+                                    vOldWorkbook = FRD.GetWorkbook_Women(cNameToURL[vKey])
+                                    sScrapedFileName = "Scraped_"+FRD.GetTitle(cNameToURL[vKey])+"_Women" #important so that program knows not to look for weight.
+                                else:
+                                    vOldWorkbook = FRD.GetWorkbook_Men(cNameToURL[vKey])
+                                    sScrapedFileName = "Scraped_"+FRD.GetTitle(cNameToURL[vKey])+"_Men"
                                 cWorkbooksToReformat.append((vOldWorkbook,sScrapedFileName))
                                 break
                         else:

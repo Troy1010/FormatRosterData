@@ -2,6 +2,13 @@ import os
 import openpyxl
 import TM_CommonPy as TM
 
+#regular old len() will return 1 if either 0 or 1 col exists.
+def GetMaxCol(vSheet):
+    if IsEmptySheet(vSheet):
+        return 0
+    else:
+        return len(vSheet['1'])
+
 def IsEmptySheet(vSheet):
     for cRows in vSheet.iter_rows():
         for vCell in cRows:
@@ -26,12 +33,7 @@ def FormatName(vOldSheet,vNewSheet):
     else:
         print("**ERROR:Could not find \'Name\' header")
         return False
-    #---Determine iPrevMaxCol
-    if IsEmptySheet(vNewSheet):
-        iPrevMaxCol = 0
-    else:
-        iPrevMaxCol = len(vNewSheet['1'])
-    #---
+    iPrevMaxCol = GetMaxCol(vNewSheet)
     for vCell in vOldSheet['B']:
         #-header
         if vCell.row < iHeaderRow:
@@ -65,12 +67,7 @@ def FormatHometown(vOldSheet,vNewSheet):
     else:
         print("**ERROR:Could not find \'Hometown\' header")
         return False
-    #---Determine iPrevMaxCol
-    if IsEmptySheet(vNewSheet):
-        iPrevMaxCol = 0
-    else:
-        iPrevMaxCol = len(vNewSheet['1'])
-    #---
+    iPrevMaxCol = GetMaxCol(vNewSheet)
     for vCell in vOldSheet[sColumn]:
         #-header
         if vCell.row < iHeaderRow:
@@ -97,6 +94,9 @@ def ConvertDateToHeight(vDate):
         return ""
     #---
     cTemp = str(vDate).split("-")
+    if len(cTemp) < 3:
+        print("**ERROR:Could not get height number from date:"+str(vDate))
+        return
     return int(cTemp[1])*12+int(cTemp[2].split(None)[0])
 
 def ConvertHeightStrToHeight(vHeightStr):
@@ -106,7 +106,7 @@ def ConvertHeightStrToHeight(vHeightStr):
     #---
     cNums = TM.GetNumsInString(vHeightStr)
     if len(cNums) != 2:
-        print("**ERROR:Could not get height number from:"+str(vHeightStr))
+        print("**ERROR:Could not get height number from:"+vHeightStr)
         return
     return cNums[0]*12+cNums[1]
 
@@ -124,12 +124,7 @@ def FormatHeight(vOldSheet,vNewSheet):
     else:
         print("**ERROR:Could not find \'Height\' header")
         return False
-    #---Determine iPrevMaxCol
-    if IsEmptySheet(vNewSheet):
-        iPrevMaxCol = 0
-    else:
-        iPrevMaxCol = len(vNewSheet['1'])
-    #---
+    iPrevMaxCol = GetMaxCol(vNewSheet)
     for vCell in vOldSheet[sColumn]:
         #-header
         if vCell.row < iHeaderRow:
@@ -140,9 +135,9 @@ def FormatHeight(vOldSheet,vNewSheet):
         #-
         if vCell.value is None:
             pass
-        elif "-" in str(vCell.value):
+        elif "00:00:00" in str(vCell.value): #it's a date
             vNewSheet[openpyxl.utils.get_column_letter(iPrevMaxCol+1)+str(vCell.row)] = ConvertDateToHeight(vCell.value)
-        elif "\"" in str(vCell.value):
+        elif "\"" in str(vCell.value) or "-" in str(vCell.value): #it's   5'11" OR 5-11
             iHeight = ConvertHeightStrToHeight(vCell.value)
             if iHeight is None:
                 bSuccess = False
@@ -170,12 +165,7 @@ def FormatWeight(vOldSheet,vNewSheet):
             \tinclude the word \'Women\' so that this program doesn't try to
             \tfind the weight column.""")
         return False
-    #---Determine iPrevMaxCol
-    if IsEmptySheet(vNewSheet):
-        iPrevMaxCol = 0
-    else:
-        iPrevMaxCol = len(vNewSheet['1'])
-    #---
+    iPrevMaxCol = GetMaxCol(vNewSheet)
     for vCell in vOldSheet[sColumn]:
         #-header
         if vCell.row < iHeaderRow:
@@ -221,12 +211,7 @@ def FormatSchoolyear(vOldSheet,vNewSheet):
     else:
         print("**ERROR:Could not find \'Schoolyear\' header")
         return False
-    #---Determine iPrevMaxCol
-    if IsEmptySheet(vNewSheet):
-        iPrevMaxCol = 0
-    else:
-        iPrevMaxCol = len(vNewSheet['1'])
-    #---
+    iPrevMaxCol = GetMaxCol(vNewSheet)
     for vCell in vOldSheet[sColumn]:
         #-header
         if vCell.row < iHeaderRow:
@@ -260,12 +245,7 @@ def FormatPosition(vOldSheet,vNewSheet):
     else:
         print("**ERROR:Could not find \'Position\' header")
         return False
-    #---Determine iPrevMaxCol
-    if IsEmptySheet(vNewSheet):
-        iPrevMaxCol = 0
-    else:
-        iPrevMaxCol = len(vNewSheet['1'])
-    #---
+    iPrevMaxCol = GetMaxCol(vNewSheet)
     for vCell in vOldSheet[sColumn]:
         #-header
         if vCell.row < iHeaderRow:

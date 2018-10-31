@@ -9,7 +9,7 @@ bWriteLogFile = True
 sLogFile = os.path.join(__file__,'..','FRDLog.log')
 ##endregion
 
-class AppFilter(logging.Filter):
+class DefaultFilter(logging.Filter):
     def filter(self, record):
         if hasattr(record,"bFormat"):
             if not record.bFormat:
@@ -18,12 +18,13 @@ class AppFilter(logging.Filter):
 
 FRDLog = logging.getLogger(__name__)
 FRDLog.setLevel(vMasterThreshold)
+FRDLog.addFilter(DefaultFilter())
+vFormatter = logging.Formatter('%(levelname)-9s %(message)s')
+#FRDLog.addFilter(DefaultFilter())
 #---ConsoleHandler
 vConsoleHandler = logging.StreamHandler()
 vConsoleHandler.setLevel(vConsoleHandlerThreshold)
-vFormatter = logging.Formatter('%(levelname)-9s %(message)s')
 vConsoleHandler.setFormatter(vFormatter)
-vConsoleHandler.addFilter(AppFilter())
 FRDLog.addHandler(vConsoleHandler)
 #---FileHandler
 try:
@@ -40,5 +41,6 @@ if bWriteLogFile:
         pass
     if not bLogFileIsOpen:
         vFileHandler = logging.FileHandler(sLogFile)
+        vFileHandler.setFormatter(vFormatter)
         vFileHandler.setLevel(vFileHandlerThreshold)
         FRDLog.addHandler(vFileHandler)

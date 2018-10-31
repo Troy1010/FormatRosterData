@@ -2,6 +2,7 @@ import os
 import openpyxl
 import TM_CommonPy as TM
 import TM_CommonPy.openpyxl as TM_OP
+import warnings
 
 def DefaultIgnoreTest(vValue):
     return vValue is None or str(vValue) in ("-","--")
@@ -18,7 +19,7 @@ def FormatName(vOldSheet,vNewSheet):
         except (TypeError, AttributeError):
             pass
     else:
-        print("**ERROR:Could not find \'Name\' header")
+        warnings.warn("**WARNING:Could not find \'Name\' header")
         return False
     #---
     iPrevMaxCol = TM_OP.GetMaxCol(vNewSheet)
@@ -146,10 +147,10 @@ def FormatWeight(vOldSheet,vNewSheet):
         except (TypeError, AttributeError):
             pass
     else:
-        print("""**ERROR:Could not find \'Weight\' header.
-            \tIf its a Women's excel sheet, you can rename the excel sheet to
-            \tinclude the word \'Women\' so that this program doesn't try to
-            \tfind the weight column.""")
+        print("**ERROR:Could not find \'Weight\' header."
+            "\n\tIf its a Women's excel sheet, you can rename the excel"
+            "\n\tsheet to include the word \'Women\' so that this program"
+            "\n\tdoesn't try to find the weight column.")
         return False
     iPrevMaxCol = TM_OP.GetMaxCol(vNewSheet)
     for vCell in vOldSheet[sColumn]:
